@@ -27,7 +27,8 @@ class action_plugin_markdownextra extends DokuWiki_Action_Plugin {
         // Check if file is a .md page:
         if(substr($ID,-3) != '.md') return true;
         // Check for default view (in this case there is only 1 parsed text)
-        // or check that the text parsed is the text being edited
+        // or check that the text to be parsed is the text being edited
+        // (ie. that it is not page intro text)
         // (see: http://www.dokuwiki.org/devel:environment#text):
         if($ACT != 'show' && $event->data != $TEXT) return true;
         
@@ -45,8 +46,10 @@ class action_plugin_markdownextra extends DokuWiki_Action_Plugin {
     function handle_meltdown_metadata(&$event, $param) {
         global $ACT;
         global $ID;
-        // Check if file is a .md page and if we are editing a page:
-        if (substr($ID,-3) != '.md' || $ACT != 'edit') return;
+        // Check if file is a .md page:
+        if (substr($ID,-3) != '.md') return;
+        // Check if we are editing a wiki page (see line 103 in inc/template.php):
+        if ($ACT != 'edit' && $ACT != 'recover' && $ACT != 'preview') return;
         
         if ($this->getConf('markdowneditor') == 'meltdown') {
             $meltdownBase = DOKU_BASE.'lib/plugins/markdownextra/lib/meltdown/';
